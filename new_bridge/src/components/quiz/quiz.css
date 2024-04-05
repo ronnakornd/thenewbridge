@@ -1,0 +1,14 @@
+
+.sd-root-modern{
+    width: 60vw !important;
+}
+
+.correctAnswer {
+    color: green;
+}
+
+@media (max-width: 991.98px){
+    .sd-root-modern{
+        width: 80vw !important;
+    }
+}

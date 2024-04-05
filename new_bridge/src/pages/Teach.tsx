@@ -1,19 +1,24 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-
+import TeacherManager from "../components/TeacherManager";
+import StudentManager from "../components/StudentManager";
+import StudentList from "../components/StudentList";
+import { useParams, useNavigate } from "react-router-dom";
 function Teach() {
   let [courseFilter, setCourseFilter] = useState("");
   let [subjectFilter, setSubjectFilter] = useState("");
   let [courses, setCourses] = useState([]);
   let [selectedCourse, setSelectedCourse] = useState();
   let [sort, setSort] = useState("old");
+  let { course_id } = useParams();
+  let navigate = useNavigate();
   useEffect(() => {
     let user = JSON.parse(localStorage.getItem("user"));
     axios
       .get(
         `${import.meta.env.VITE_DOMAIN}/api/courses?filters[editors][id][$eq]=${
           user.id
-        }&populate[editors][populate][profileImage]=*`,
+        }&populate[0]=editors&populate[1]=editors.profileImage&populate[2]=enrolled_students&populate[3]=enrolled_students.profileImage`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
         }
@@ -22,11 +27,14 @@ function Teach() {
         let data = response.data.data;
         console.log(data);
         setCourses(data);
+        if(course_id){
+          setSelectedCourse(data.find(item=> item.id == course_id));
+        }
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [course_id]);
 
   const sortCourses = () => {
     if (sort === "old") {
@@ -43,6 +51,7 @@ function Teach() {
       setCourses([...newCourse]);
     }
   };
+
   return (
     <div className="w-full grid grid-flow-col grid-cols-3">
       <div className="min-h-screen bg-stone-300 p-5">
@@ -121,7 +130,7 @@ function Teach() {
               </div>
               <div className="modal-action">
                 <form method="dialog">
-                  {/* if there is a button in form, it will close the modal */}
+                  
                   <button className="btn">Close</button>
                 </form>
               </div>
@@ -143,7 +152,7 @@ function Teach() {
               }
               return (
                 <li key={item.id} className="rounded-md bg-stone-400">
-                  <a onClick={() => setSelectedCourse(item.attributes)}>
+                  <a onClick={() => navigate(`/teach/${item.id}`)}>
                     {item.attributes.name}
                   </a>
                 </li>
@@ -155,10 +164,13 @@ function Teach() {
       <div className="bg-stone-200 col-span-2 p-5">
         {selectedCourse && (
           <div className="w-full flex flex-col gap-2 justify-center">
-            <h1 className="text-2xl font-bold">{selectedCourse.name}</h1>
+            <h1 className="text-2xl font-bold">{selectedCourse.attributes.name}</h1>
+            <div className="flex items-center gap-2"><a className="btn btn-neutral btn-sm" href={`/course_edit/${selectedCourse.id}`}>แก้ไขคอร์ส</a>
+            <div className="btn bg-red-400 btn-sm">ลบคอร์ส</div>
+            </div>
             <h2 className="text-lg flex items-center gap-1">
               ผู้สอน{" "}
-              <a href="" className="text-primary hover:text-blue-300">
+              <a onClick={()=>document.getElementById('editor_modal').showModal()} className="text-primary hover:text-blue-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
@@ -172,23 +184,36 @@ function Teach() {
                 </svg>
               </a>
             </h2>
-            {selectedCourse.editors.data.map((editor) => {
+            <dialog id="editor_modal" className="modal">
+              <div className="modal-box">
+                <h3 className="font-bold text-lg">จัดการผู้สอน</h3>
+                <div className="w-full">
+                <TeacherManager course={selectedCourse} />
+                </div>
+                <div className="modal-action">
+                  <form method="dialog">
+                    <button className="btn">Close</button>
+                  </form>
+                </div>
+              </div>
+            </dialog>
+            {selectedCourse.attributes.editors.data.map((editor) => {
               return (
                 <div className="flex items-center gap-2">
                   <img
                     className="w-10 h-10 rounded-full border border-2 border-stone-600"
-                    src={
+                    src={editor.attributes.profileImage.data?
                       import.meta.env.VITE_DOMAIN +
-                      editor.attributes.profileImage.data.attributes.url
+                      editor.attributes.profileImage.data.attributes.url:"/images/profile.jpg"
                     }
                   ></img>
-                  <p>{editor.attributes.firstName}</p>
+                  <p>{`${editor.attributes.firstName} ${editor.attributes.lastName}`}</p>
                 </div>
               );
             })}
             <h2 className="text-lg flex items-center gap-1">
               ผู้เรียน
-              <a href="" className="text-primary hover:text-blue-300">
+              <a onClick={()=>document.getElementById('student_modal').showModal()} className="text-primary hover:text-blue-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
@@ -202,6 +227,20 @@ function Teach() {
                 </svg>
               </a>
             </h2>
+            <dialog id="student_modal" className="modal">
+              <div className="modal-box">
+                <h3 className="font-bold text-lg">จัดการผู้เรียน</h3>
+                <div className="w-full">
+                <StudentManager course={selectedCourse} />
+                </div>
+                <div className="modal-action">
+                  <form method="dialog">
+                    <button className="btn">Close</button>
+                  </form>
+                </div>
+              </div>
+            </dialog>
+            <StudentList students={selectedCourse.attributes.enrolled_students.data} />
           </div>
         )}
       </div>

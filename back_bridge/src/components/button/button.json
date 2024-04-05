@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_button_buttons",
+  "info": {
+    "displayName": "button"
+  },
+  "options": {},
+  "attributes": {
+    "class": {
+      "type": "enumeration",
+      "enum": [
+        "primary",
+        "secondary",
+        "danger",
+        "neutral"
+      ]
+    },
+    "text": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    }
+  }
+}

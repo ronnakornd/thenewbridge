@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ImgHTMLAttributes } from "react";
 import axios from "axios";
 
 function Profile() {
@@ -10,11 +10,11 @@ function Profile() {
   const [position, setPosition] = useState("");
   const [registrationError, setRegistrationError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [id, setId] = useState();
+  const [id, setId] = useState<Number | null |undefined>();
   const [file, setFile] = useState(null);
   const [uploadSuccess, setUploadSuccess] = useState("");
   const [error, setError] = useState("");
-  const profileImage = useRef();
+  const profileImage = useRef<HTMLImageElement>();
 
   useEffect(() => {
     let user: any = JSON.parse(localStorage.getItem("user"));
@@ -32,7 +32,9 @@ function Profile() {
         setLastName(user.lastName);
         setNickname(user.nickName);
         setPosition(user.position);
-        profileImage.current.src = import.meta.env.VITE_DOMAIN+user.profileImage.url;
+        if(profileImage.current){
+          profileImage.current.src = import.meta.env.VITE_DOMAIN+user.profileImage.url;
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -83,7 +85,9 @@ function Profile() {
       });
       console.log("File uploaded successfully:", response);
       let data = response.data[0];
-      profileImage.current.src = import.meta.env.VITE_DOMAIN+data.url;
+      if(profileImage.current){
+        profileImage.current.src = import.meta.env.VITE_DOMAIN+data.url;
+      }
       setUploadSuccess("File uploaded successfully.");
     } catch (error) {
       console.error("Error uploading file:", error.response.data);
@@ -91,14 +95,16 @@ function Profile() {
     }
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = (event: Event) => {
     setFile(event.target.files[0]);
     const reader = new FileReader();
     reader.addEventListener(
       "load",
       () => {
         // convert image file to base64 string
-        profileImage.current.src = reader.result;
+        if(profileImage.current){
+          profileImage.current.src = reader.result;
+        }
       },
       false
     );
@@ -108,7 +114,7 @@ function Profile() {
     }
   };
 
-  const handleSubmit = (event: any) => {
+  const handleSubmit = (event: Event) => {
     event.preventDefault();
     handleUpdate();
   };
