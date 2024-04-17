@@ -34,7 +34,7 @@ function ModuleEdit() {
       .get(
         `${
           import.meta.env.VITE_DOMAIN
-        }/api/modules/${module_id}?populate[0]=lesson&populate[1]=lesson.courses&populate[2]=lesson.courses.editors&populate[3]=lesson.courses.lessons&populate[4]=lesson.courses.lessons.modules`
+        }/api/modules/${module_id}?populate[0]=lesson&populate[1]=lesson.courses&populate[2]=lesson.courses.editors&populate[3]=lesson.courses.lessons&populate[4]=lesson.courses.lessons.modules&populate[5]=resource&populate[6]=video`
       )
       .then(function (response) {
         console.log(response);
@@ -63,7 +63,6 @@ function ModuleEdit() {
     let currentModule = module;
     currentModule.attributes.content = value;
     setModule({ ...currentModule });
-    console.log(currentModule);
   }
 
   function fileChange(value) {
@@ -84,15 +83,21 @@ function ModuleEdit() {
       content = JSON.stringify(content);
     }
     axios
-      .put(`${import.meta.env.VITE_DOMAIN}/api/modules/${module.id}`, {
-        data: {
-          name: module.attributes.name,
-          description: module.attributes.description,
-          content: content,
-          type: module.attributes.type,
-          file: module.attributes.file,
+      .put(
+        `${import.meta.env.VITE_DOMAIN}/api/modules/${module.id}`,
+        {
+          data: {
+            name: module.attributes.name,
+            description: module.attributes.description,
+            content: content,
+            type: module.attributes.type,
+            file: module.attributes.file,
+          },
         },
-      })
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+        }
+      )
       .then(function (response) {
         console.log(response);
         if (response.data.error) {
@@ -276,7 +281,12 @@ function ModuleEdit() {
                   video: (
                     <VideoUpload
                       contentChange={contentChange}
-                      defaultValue={module.attributes.content}
+                      module_id={module.id}
+                      defaultValue={() => {
+                        if(module.attributes.video.data != null){
+                          return module.attributes.video.data.attributes.url
+                        }
+                      }}
                     />
                   ),
                   audio: (
@@ -294,7 +304,12 @@ function ModuleEdit() {
               </label>
               <FileUpload
                 contentChange={fileChange}
-                defaultValue={module.file}
+                defaultValue={
+                  module.attributes.resource
+                    ? module.attributes.resource.data
+                    : []
+                }
+                module_id={module.id}
               />
             </div>
             <div className="flex flex-col justify-start items-start">

@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "resourses",
+  "info": {
+    "singularName": "resourse",
+    "pluralName": "resourses",
+    "displayName": "resource",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "files": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}

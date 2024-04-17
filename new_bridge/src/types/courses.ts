@@ -37,7 +37,21 @@ interface CourseType {
         name:String,
         type:String,
         content:String,
-        description:String
+        description:String,
+        resource: {
+           data: FileType[]
+        },
+        video: {
+          data: FileType
+        }
+     }
+  }
+
+  interface FileType {
+     id: Number,
+     attributes: {
+        name: String,
+        url: String
      }
   }
 

@@ -999,11 +999,9 @@ export interface ApiModuleModule extends Schema.CollectionType {
       'oneToOne',
       'api::quiz.quiz'
     >;
-    video: Attribute.Relation<
-      'api::module.module',
-      'manyToOne',
-      'api::video.video'
-    >;
+    content: Attribute.Text;
+    resource: Attribute.Media;
+    video: Attribute.Media;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1134,6 +1132,37 @@ export interface ApiQuizQuiz extends Schema.CollectionType {
   };
 }
 
+export interface ApiResourseResourse extends Schema.CollectionType {
+  collectionName: 'resourses';
+  info: {
+    singularName: 'resourse';
+    pluralName: 'resourses';
+    displayName: 'resource';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    files: Attribute.Media;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::resourse.resourse',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::resourse.resourse',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiTagTag extends Schema.SingleType {
   collectionName: 'tags';
   info: {
@@ -1208,11 +1237,6 @@ export interface ApiVideoVideo extends Schema.CollectionType {
   attributes: {
     name: Attribute.String;
     file: Attribute.Media;
-    modules: Attribute.Relation<
-      'api::video.video',
-      'oneToMany',
-      'api::module.module'
-    >;
     users_permissions_user: Attribute.Relation<
       'api::video.video',
       'oneToOne',
@@ -1262,6 +1286,7 @@ declare module '@strapi/types' {
       'api::progress.progress': ApiProgressProgress;
       'api::question.question': ApiQuestionQuestion;
       'api::quiz.quiz': ApiQuizQuiz;
+      'api::resourse.resourse': ApiResourseResourse;
       'api::tag.tag': ApiTagTag;
       'api::teacher.teacher': ApiTeacherTeacher;
       'api::video.video': ApiVideoVideo;

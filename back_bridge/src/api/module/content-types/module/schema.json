@@ -38,11 +38,29 @@
       "relation": "oneToOne",
       "target": "api::quiz.quiz"
     },
+    "content": {
+      "type": "text"
+    },
+    "resource": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
     "video": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::video.video",
-      "inversedBy": "modules"
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

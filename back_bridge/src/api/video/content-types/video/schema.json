@@ -26,12 +26,6 @@
         "audios"
       ]
     },
-    "modules": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::module.module",
-      "mappedBy": "video"
-    },
     "users_permissions_user": {
       "type": "relation",
       "relation": "oneToOne",
