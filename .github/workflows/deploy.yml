@@ -1,0 +1,62 @@
+name: SFTP deploy
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/deploy.yml"
+      - "**"
+env:
+  VITE_DOMAIN: https://bridgethegapschool.com/strapi
+
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    env:
+      CI: ""
+
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v2
+        with:
+            node-version: '16'
+
+      - name: 🔨 Build Project
+        run: |
+           cd new_bridge 
+           npm install
+           npm run build
+
+      - name: sync fron-end
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: ${{ secrets.FTP_ADDRESS }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local_path: ./new_bridge/dist/
+          remote_path: /var/www/html
+      - name: sync backend-end
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: ${{ secrets.FTP_ADDRESS }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local_path: ./back_bridge/
+          remote_path: /mnt/volume_sgp1_01/
+      - name: run server
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.FTP_ADDRESS }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          script: |
+           cd /mnt/volume_sgp1_01/back_bridge/
+           npm install
+           npm run build
+           pm2 delete all
+           pm2 run ecosystem.config.js

@@ -996,12 +996,13 @@ export interface ApiModuleModule extends Schema.CollectionType {
     >;
     quiz: Attribute.Relation<
       'api::module.module',
-      'oneToOne',
+      'manyToOne',
       'api::quiz.quiz'
     >;
     content: Attribute.Text;
     resource: Attribute.Media;
     video: Attribute.Media;
+    audio: Attribute.Media;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1110,6 +1111,7 @@ export interface ApiQuizQuiz extends Schema.CollectionType {
     singularName: 'quiz';
     pluralName: 'quizzes';
     displayName: 'quiz';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -1121,6 +1123,14 @@ export interface ApiQuizQuiz extends Schema.CollectionType {
       'api::quiz.quiz',
       'manyToMany',
       'api::question.question'
+    >;
+    time: Attribute.Integer;
+    attempt: Attribute.Integer;
+    deadline: Attribute.DateTime;
+    modules: Attribute.Relation<
+      'api::quiz.quiz',
+      'oneToMany',
+      'api::module.module'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;

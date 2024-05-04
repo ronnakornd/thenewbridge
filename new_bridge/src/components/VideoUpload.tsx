@@ -5,11 +5,13 @@ function VideoUpload(props) {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [progress, setProgress] = useState(0);
     const [content , setContent] = useState(props.defaultValue);
+    const [currentId, setCurrentId] = useState(props.currentVideoId);
     const [uploadSuccess, setUploadSuccess] = useState("");
     const [error, setError] = useState("");
     useEffect(()=>{
         setContent(props.defaultValue);
-    },[props.defaultValue])
+        setCurrentId(props.currentVideoId);
+    },[props])
     const submitHandler = async (e) => {
         e.preventDefault();
         const formData = new FormData();
@@ -33,7 +35,16 @@ function VideoUpload(props) {
           console.log("File uploaded successfully:", response);
           let data = response.data[0];
           setUploadSuccess("File uploaded successfully.");
-          window.location.reload();
+          axios({
+            method: "delete",
+            url: `${import.meta.env.VITE_DOMAIN}/api/upload/files/${currentId}`,
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+            },
+          }).then((response) => {
+            window.location.reload();
+          });
         } catch (error) {
           console.error("Error uploading file:", error.response.data);
           setError("Error uploading file.");
@@ -54,4 +65,4 @@ function VideoUpload(props) {
 
 }
 
-    export default VideoUpload
+export default VideoUpload

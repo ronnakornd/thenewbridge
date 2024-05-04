@@ -43,6 +43,9 @@ interface CourseType {
         },
         video: {
           data: FileType
+        },
+        audio: {
+          data: FileType
         }
      }
   }

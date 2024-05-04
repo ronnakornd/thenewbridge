@@ -82,7 +82,8 @@ function FileUpload(props) {
               <a
                 className="btn flex justify-between bg-stone-300"
                 href={import.meta.env.VITE_DOMAIN+item.attributes.url}
-                download={true}
+                download=""
+                target="_self"
               >
                 <p>{item.attributes.name}</p>
                 <div

@@ -8,8 +8,8 @@ import FileUpload from "../components/FileUpload";
 import AudioUpload from "../components/AudioUpload";
 import type { CourseType, LessonType, ModuleType } from "../types/courses";
 function ModuleEdit() {
-  let { module_id } = useParams();
-  let [course, setCourse] = useState<CourseType>({
+  const { module_id } = useParams();
+  const [course, setCourse] = useState<CourseType>({
     id: 0,
     attributes: {
       name: "",
@@ -19,10 +19,11 @@ function ModuleEdit() {
       editors: { data: [] },
     },
   });
-  let [module, setModule] = useState<ModuleType>({
+  const [module, setModule] = useState<ModuleType>({
     id: 0,
     attributes: { name: "", type: "article", description: "", content: "" },
   });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +35,7 @@ function ModuleEdit() {
       .get(
         `${
           import.meta.env.VITE_DOMAIN
-        }/api/modules/${module_id}?populate[0]=lesson&populate[1]=lesson.courses&populate[2]=lesson.courses.editors&populate[3]=lesson.courses.lessons&populate[4]=lesson.courses.lessons.modules&populate[5]=resource&populate[6]=video`
+        }/api/modules/${module_id}?populate[0]=lesson&populate[1]=lesson.courses&populate[2]=lesson.courses.editors&populate[3]=lesson.courses.lessons&populate[4]=lesson.courses.lessons.modules&populate[5]=resource&populate[6]=video&populate[7]=audio`
       )
       .then(function (response) {
         console.log(response);
@@ -122,9 +123,9 @@ function ModuleEdit() {
       <div className="grid md:grid-cols-8">
         <div className="w-12/12 md:col-span-2  h-full">
           <div>
-            <h1 className="text-2xl font-noto-sans font-bold px-2">
+            <a href={`/course_edit/${course.id}`} className="text-2xl font-noto-sans hover:text-slate-500 font-bold px-2">
               {course.attributes.name}
-            </h1>
+            </a>
             <ul className="menu bg-base-200  w-full">
               <div className="join join-vertical w-full">
                 {course.attributes.lessons.data.map((lesson, index) => {
@@ -287,12 +288,27 @@ function ModuleEdit() {
                           return module.attributes.video.data.attributes.url
                         }
                       }}
+                      currentVideoId={() => {
+                        if(module.attributes.video.data != null){
+                          return module.attributes.video.data.id
+                        }
+                      }}
                     />
                   ),
                   audio: (
                     <AudioUpload
                       contentChange={contentChange}
-                      defaultValue={module.attributes.content}
+                      module_id={module.id}
+                      defaultValue={() => {
+                        if(module.attributes.audio.data != null){
+                          return module.attributes.audio.data.attributes.url
+                        }
+                      }}
+                      currentVideoId={() => {
+                        if(module.attributes.audio.data != null){
+                          return module.attributes.audio.data.id
+                        }
+                      }}
                     />
                   ),
                 }[module.attributes.type]
@@ -313,25 +329,7 @@ function ModuleEdit() {
               />
             </div>
             <div className="flex flex-col justify-start items-start">
-              <div className="flex gap-2">
-                <button
-                  onClick={() => navigate(`/course_layout/${course_id}`)}
-                  className="btn bg-slate-400"
-                >
-                  <svg
-                    className="text-white text-3xl"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1em"
-                    height="1em"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="m12 16l1.4-1.4l-1.6-1.6H16v-2h-4.2l1.6-1.6L12 8l-4 4l4 4Zm0 6q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Z"
-                    ></path>
-                  </svg>
-                  previous
-                </button>
+              <div className="w-3/4 flex gap-2 items-end justify-end" >
                 <button className="btn btn-neutral" onClick={saveModule}>
                   <svg
                     className="text-white text-3xl"
@@ -351,19 +349,8 @@ function ModuleEdit() {
                   onClick={() => navigate(`/preview/${module_id}`)}
                   className="btn bg-slate-400"
                 >
-                  <svg
-                    className="text-white text-3xl"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1em"
-                    height="1em"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M12 22q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm.2-9l-.9.9q-.275.275-.275.7t.275.7q.275.275.7.275t.7-.275l2.6-2.6q.3-.3.3-.7t-.3-.7l-2.6-2.6q-.275-.275-.7-.275t-.7.275q-.275.275-.275.7t.275.7l.9.9H9q-.425 0-.713.288T8 12q0 .425.288.713T9 13h3.2Z"
-                    ></path>
-                  </svg>
-                  next
+                 <svg className="text-white text-3xl" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4"><path d="M24 36c11.046 0 20-12 20-12s-8.954-12-20-12S4 24 4 24s8.954 12 20 12Z"/><path d="M24 29a5 5 0 1 0 0-10a5 5 0 0 0 0 10Z"/></g></svg>
+                  preview
                 </button>
               </div>
             </div>

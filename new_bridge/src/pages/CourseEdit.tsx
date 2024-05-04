@@ -26,7 +26,7 @@ function CourseEdit() {
         }
       )
       .then((response) => {
-        let data:CourseType = response.data.data;
+        let data: CourseType = response.data.data;
         console.log(data);
         setCourse(data);
         setName(data.attributes.name);
@@ -41,11 +41,11 @@ function CourseEdit() {
 
   useEffect(() => {
     if (course_id) {
-        fetchCourse();
+      fetchCourse();
     }
   }, [course_id]);
 
-  const handleSubmit = (event:Event) => {
+  const handleSubmit = (event: Event) => {
     event.preventDefault();
     axios
       .put(
@@ -73,7 +73,7 @@ function CourseEdit() {
       });
   };
 
-  const addModule = (lesson_id:Number) => {
+  const addModule = (lesson_id: Number) => {
     axios
       .post(
         `${import.meta.env.VITE_DOMAIN}/api/modules`,
@@ -99,8 +99,16 @@ function CourseEdit() {
         console.log(err);
       });
   };
+  
+  const deleteModule = e => {
+      e.stopPropagation();
 
-  const reorderUp = (lesson_id:Number, current_id:Number, neworder_id:Number) => {
+  }
+  const reorderUp = (
+    lesson_id: Number,
+    current_id: Number,
+    neworder_id: Number
+  ) => {
     axios
       .put(
         `${import.meta.env.VITE_DOMAIN}/api/lessons/${lesson_id}`,
@@ -120,7 +128,7 @@ function CourseEdit() {
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
-       }, 1000);
+        }, 1000);
         fetchCourse();
       })
       .catch((err) => {
@@ -128,7 +136,11 @@ function CourseEdit() {
       });
   };
 
-  const reorderDown = (lesson_id:Number, current_id:Number, neworder_id:Number) => {
+  const reorderDown = (
+    lesson_id: Number,
+    current_id: Number,
+    neworder_id: Number
+  ) => {
     axios
       .put(
         `${import.meta.env.VITE_DOMAIN}/api/lessons/${lesson_id}`,
@@ -147,7 +159,7 @@ function CourseEdit() {
         setAlertText("บันทึกสำเร็จ");
         setShowAlert(true);
         setTimeout(() => {
-           setShowAlert(false);
+          setShowAlert(false);
         }, 1000);
         fetchCourse();
       })
@@ -234,11 +246,16 @@ function CourseEdit() {
                       {lesson.attributes.modules && (
                         <ul className="menu gap-1 p-1">
                           {lesson.attributes.modules.data.map(
-                            (module:ModuleType, index:Number) => {
+                            (module: ModuleType, index: Number) => {
                               let lessonLength =
                                 lesson.attributes.modules.data.length;
                               return (
-                                <li className="bg-stone-300  flex flex-row gap-1" onClick={()=> window.location.href = `/module_edit/${module.id}`}>
+                                <li
+                                  className="bg-stone-300  flex flex-row gap-1"
+                                  onClick={() =>
+                                    (window.location.href = `/module_edit/${module.id}`)
+                                  }
+                                >
                                   <div className="w-full">
                                     {
                                       {
@@ -261,7 +278,7 @@ function CourseEdit() {
                                             </svg>
                                           </div>
                                         ),
-                                        quiz:  (
+                                        quiz: (
                                           <div>
                                             <svg
                                               xmlns="http://www.w3.org/2000/svg"
@@ -276,7 +293,7 @@ function CourseEdit() {
                                             </svg>
                                           </div>
                                         ),
-                                        video:  (
+                                        video: (
                                           <div>
                                             <svg
                                               xmlns="http://www.w3.org/2000/svg"
@@ -311,94 +328,112 @@ function CourseEdit() {
                                     <div className="text-sm">
                                       {module.attributes.name}
                                     </div>
-                                    {index > 0 && (
+                                    <div>
+                                      {index > 0 && (
+                                        <div
+                                          className="btn btn-xs bg-stone-200"
+                                          onClick={(e: Event) => {
+                                            e.stopPropagation();
+                                            reorderUp(
+                                              lesson.id,
+                                              module.id,
+                                              lesson.attributes.modules.data[
+                                                index - 1
+                                              ].id
+                                            );
+                                          }}
+                                        >
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 1024 1024"
+                                          >
+                                            <path
+                                              fill="currentColor"
+                                              d="M512 320L192 704h639.936z"
+                                            />
+                                          </svg>
+                                        </div>
+                                      )}
+                                      {index == 0 && (
+                                        <div className="btn btn-ghost btn-xs bg-stone-400">
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 1024 1024"
+                                          >
+                                            <path
+                                              fill="currentColor"
+                                              d="M512 320L192 704h639.936z"
+                                            />
+                                          </svg>
+                                        </div>
+                                      )}
+                                      {index < lessonLength - 1 && (
+                                        <div
+                                          className="btn btn-xs bg-stone-200"
+                                          onClick={(e: Event) => {
+                                            e.stopPropagation();
+                                            reorderDown(
+                                              lesson.id,
+                                              module.id,
+                                              lesson.attributes.modules.data[
+                                                index + 1
+                                              ].id
+                                            );
+                                          }}
+                                        >
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 1024 1024"
+                                          >
+                                            <path
+                                              fill="currentColor"
+                                              d="m192 384l320 384l320-384z"
+                                            />
+                                          </svg>
+                                        </div>
+                                      )}
+                                      {index >= lessonLength - 1 && (
+                                        <div className="btn btn-ghost  btn-xs bg-stone-400">
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 1024 1024"
+                                          >
+                                            <path
+                                              fill="currentColor"
+                                              d="m192 384l320 384l320-384z"
+                                            />
+                                          </svg>
+                                        </div>
+                                      )}
                                       <div
-                                        className="btn btn-xs bg-stone-200"
-                                        onClick={(e:Event) =>{
-                                          e.stopPropagation();
-                                          reorderUp(
-                                            lesson.id,
-                                            module.id,
-                                            lesson.attributes.modules.data[
-                                              index - 1
-                                            ].id
-                                          )}
+                                        className="text-red-700 btn btn-sm btn-ghost"
+                                        onClick={(event) =>
+                                          removeFile(event, item)
                                         }
                                       >
                                         <svg
-                                          xmlns="http://www.w3.org/2000/svg"
                                           width="20"
                                           height="20"
-                                          viewBox="0 0 1024 1024"
+                                          viewBox="0 0 21 21"
                                         >
                                           <path
-                                            fill="currentColor"
-                                            d="M512 320L192 704h639.936z"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="m15.5 15.5l-10-10zm0-10l-10 10"
                                           />
                                         </svg>
                                       </div>
-                                    )}
-                                     {index == 0 && (
-                                      <div
-                                        className="btn btn-ghost btn-xs bg-stone-400"
-                                      >
-                                        <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          width="20"
-                                          height="20"
-                                          viewBox="0 0 1024 1024"
-                                        >
-                                          <path
-                                            fill="currentColor"
-                                            d="M512 320L192 704h639.936z"
-                                          />
-                                        </svg>
-                                      </div>
-                                    )}
-                                    {index < lessonLength - 1 && (
-                                      <div
-                                        className="btn btn-xs bg-stone-200"
-                                        onClick={(e: Event) =>{
-                                          e.stopPropagation();
-                                          reorderDown(
-                                            lesson.id,
-                                            module.id,
-                                            lesson.attributes.modules.data[
-                                              index + 1
-                                            ].id
-                                          )
-                                        }}
-                                      >
-                                        <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          width="20"
-                                          height="20"
-                                          viewBox="0 0 1024 1024"
-                                        >
-                                          <path
-                                            fill="currentColor"
-                                            d="m192 384l320 384l320-384z"
-                                          />
-                                        </svg>
-                                      </div>
-                                    )}
-                                      {index >= lessonLength - 1 && (
-                                      <div
-                                        className="btn btn-ghost  btn-xs bg-stone-400"
-                                      >
-                                        <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          width="20"
-                                          height="20"
-                                          viewBox="0 0 1024 1024"
-                                        >
-                                          <path
-                                            fill="currentColor"
-                                            d="m192 384l320 384l320-384z"
-                                          />
-                                        </svg>
-                                      </div>
-                                    )}
+                                    </div>
                                   </div>
                                 </li>
                               );
@@ -438,7 +473,7 @@ function CourseEdit() {
                                 value="quiz"
                                 selected={moduleType == "quiz"}
                               >
-                                แบบทกสอบ
+                                แบบทดสอบ
                               </option>
                             </select>
                             <div
@@ -461,6 +496,20 @@ function CourseEdit() {
           </button>
         </form>
       </div>
+      <dialog id="delete_module_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Hello!</h3>
+          <p className="py-4">
+            ยืนยันที่จะลบ moodule?
+          </p>
+          <div className="modal-action">
+            <form method="dialog">
+              <button className="btn btn-warning" onClick={(event)=>deleteModule(event)}>ยืนยัน</button>
+              <button className="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 }
