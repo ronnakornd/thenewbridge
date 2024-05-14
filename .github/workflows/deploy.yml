@@ -39,23 +39,4 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           local_path: ./new_bridge/dist/
-          remote_path: /var/www/html/new
-      - name: sync backend-end
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          server: ${{ secrets.FTP_ADDRESS }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          local_path: ./back_bridge/
-          remote_path: /mnt/volume_sgp1_01/
-      - name: run server
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.FTP_ADDRESS }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          script: |
-           cd /mnt/volume_sgp1_01/back_bridge/
-           npm install
-           npm run build
-           pm2 run ecosystem.config.js
+          remote_path: /var/www/html/new/
