@@ -20,7 +20,7 @@ function RegisterPage() {
         }
 
         try {
-            const response = await axios.post('http://localhost:1337/api/auth/local/register', {
+            const response = await axios.post(`${import.meta.env.VITE_DOMAIN}/api/auth/local/register`, {
                 username,
                 email,
                 password,
