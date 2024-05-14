@@ -76,7 +76,7 @@ function Profile() {
     try {
       const response = await axios({
         method: "post",
-        url: "http://localhost:1337/api/upload",
+        url: `${import.meta.env.VITE_DOMAIN}/api/upload`,
         data: formData,
         headers: {
           "Content-Type": "multipart/form-data",
