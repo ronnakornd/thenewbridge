@@ -7,7 +7,7 @@ on:
       - ".github/workflows/deploy.yml"
       - "**"
 env:
-  VITE_DOMAIN: https://bridgethegapschool.com/strapi
+  VITE_DOMAIN: https://api.bridgethegapschool.com
 
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           local_path: ./new_bridge/dist/
-          remote_path: /var/www/html
+          remote_path: /var/www/html/new
       - name: sync backend-end
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
@@ -58,5 +58,4 @@ jobs:
            cd /mnt/volume_sgp1_01/back_bridge/
            npm install
            npm run build
-           pm2 delete all
            pm2 run ecosystem.config.js
