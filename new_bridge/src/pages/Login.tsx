@@ -9,7 +9,7 @@ function LoginPage() {
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         try {
-            const response = await axios.post('http://localhost:1337/api/auth/local', {
+            const response = await axios.post(`${import.meta.env.VITE_DOMAIN}/api/auth/local`, {
                 identifier: email,
                 password: password,
             });
